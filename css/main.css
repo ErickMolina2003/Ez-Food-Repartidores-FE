@@ -31,3 +31,7 @@
 .divider {
   border-top: 2px solid black;
 }
+
+.btn-orden-detalle {
+  width: 100%;
+}
