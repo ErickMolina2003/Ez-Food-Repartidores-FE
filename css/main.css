@@ -35,3 +35,11 @@
 .btn-orden-detalle {
   width: 100%;
 }
+
+.secondary-nav-fill {
+  height: 100vh;
+}
+
+.oculto {
+  display: none;
+}
