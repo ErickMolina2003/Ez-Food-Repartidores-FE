@@ -18,6 +18,7 @@
         integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
         crossorigin="anonymous"></script>
 
+    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script defer src="controlador.js"></script>
     <title>Ez Food Repartidores</title>
 </head>
@@ -91,18 +92,18 @@
                     <img alt="user-logo" src="assets/imagenes/600px-Motorcycle_icon.svg.png" width="60px">
                 </div>
                 <div class="col-10 my-2">
-                    <input type="string" class="form-control login-input" id="exampleInputEmail1"
-                        aria-describedby="emailHelp" placeholder="Username">
+                    <input type="string" class="form-control login-input" aria-describedby="emailHelp"
+                        placeholder="Username">
                 </div>
                 <div class="col-10 my-2">
-                    <input type="string" class="form-control login-input" id="exampleInputEmail1"
-                        aria-describedby="emailHelp" placeholder="Password">
+                    <input type="password" class="form-control password-input" aria-describedby="emailHelp"
+                        placeholder="Password">
                 </div>
                 <div class="col-10 mt-5 mb-2">
-                    <button type="button" class="btn btn-light login-btn">LOGIN</button>
+                    <button type="button" class="btn btn-light login-btn" onclick=logCredenciales()>LOGIN</button>
                 </div>
-                <div class="col-7">
-                    <a>Olvidaste tu contraseña?</a>
+                <div class="col-7 crear-usuario" onclick=creandoUsuario()>
+                    <a>Crear Usuario</a>
                 </div>
             </div>
         </div>
@@ -147,7 +148,8 @@
                         <div class="col-12">
                             <div class="row justify-content-center my-2">
                                 <div class="col-5">
-                                    <button type="button" class="btn btn-warning ver-detalle-orden">Ver detalles</button>
+                                    <button type="button" class="btn btn-warning ver-detalle-orden">Ver
+                                        detalles</button>
                                 </div>
                             </div>
                         </div>
@@ -337,7 +339,8 @@
                         <div class="col-12">
                             <div class="row justify-content-center my-2">
                                 <div class="col-5">
-                                    <button type="button" class="btn btn-warning por-entregar-detalles">Ver detalles</button>
+                                    <button type="button" class="btn btn-warning por-entregar-detalles">Ver
+                                        detalles</button>
                                 </div>
                                 <div class="col-5">
                                     <div class="btn-group">
@@ -580,10 +583,12 @@
                         <div class="col-12">
                             <div class="row justify-content-evenly pt-2 pb-3">
                                 <div class="col-6">
-                                    <button type="button" class="btn btn-success btn-finalizarOrden">Finalizar Orden</button>
+                                    <button type="button" class="btn btn-success btn-finalizarOrden">Finalizar
+                                        Orden</button>
                                 </div>
                                 <div class="col-6">
-                                    <button type="button" class="btn btn-warning btn-finalizarOrden-atras">Atras</button>
+                                    <button type="button"
+                                        class="btn btn-warning btn-finalizarOrden-atras">Atras</button>
                                 </div>
                             </div>
                         </div>
@@ -650,7 +655,8 @@
                         <div class="col-12">
                             <div class="row justify-content-center my-2">
                                 <div class="col-5">
-                                    <button type="button" class="btn btn-warning btn-verDetalle-Entregada">Ver detalles</button>
+                                    <button type="button" class="btn btn-warning btn-verDetalle-Entregada">Ver
+                                        detalles</button>
                                 </div>
                                 <div class="col-5">
                                     <button type="button" class="btn btn-success">Entregada</button>
