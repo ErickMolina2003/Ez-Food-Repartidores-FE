@@ -20,8 +20,145 @@ const linkToDisponibles = document.querySelector('.ordenes-disponibles-link');
 const linkToPorEntregar = document.querySelector('.porEntregar-link');
 const linkToEntregadas = document.querySelector('.entregadas-link');
 const linkToLogin = document.querySelector('.salir-link');
+const loginContainer = document.querySelector('.login-container');
+const crearUsuario = document.querySelector('.crear-usuario');
+
+function logCredenciales() {
+    axios({
+        url: '../Ez-Food-BE/api/repartidor.php',
+        method: 'GET',
+        responseType: 'json',
+    }).then((response) => {
+        console.log(response.data)
+
+        let usuarioLog = document.querySelector('.login-input').value;
+        let contrasenaLog = document.querySelector('.password-input').value;
+
+        if (usuarioLog && contrasenaLog) {
+            let contador = 0;
+
+            response.data.forEach((data) => {
+                if (data.repartidor == usuarioLog && data.contrasena == contrasenaLog) {
+                    login.classList.add('oculto');
+
+                    mainNavbar.classList.remove('oculto');
+                    ordenesDisponibles.classList.remove('oculto');
+                    footer.classList.remove('oculto');
+
+                    contador++;
+                }
+            })
+
+            if (contador == 0) {
+                alert('Usuario no encontrado\nIntente nuevamente o cree uno nuevo');
+            }
+
+        }
+
+        if (!usuarioLog || !contrasenaLog) {
+            alert('Ingrese las credenciales');
+        }
 
 
+
+    }).catch((err) => {
+        console.log(err);
+    })
+
+}
+
+
+
+function creandoUsuario() {
+    loginContainer.innerHTML = ``;
+
+    loginContainer.insertAdjacentHTML('beforeend',
+        `
+    <div class="row align-items-center justify-content-center login-content">
+        <div class="col-3 my-2">
+            <img alt="user-logo" src="assets/imagenes/600px-Motorcycle_icon.svg.png" width="60px">
+        </div>
+        <div class="col-10 my-2">
+            <input type="string" class="form-control login-input"
+                aria-describedby="emailHelp" placeholder="Username">
+        </div>
+        <div class="col-10 my-2">
+                   <input type="password" class="form-control password-input" 
+                    aria-describedby="emailHelp" placeholder="Password">
+        </div>
+        <div class="col-10 my-2">
+                    <input type="password" class="form-control password-confirm" 
+                        aria-describedby="emailHelp" placeholder="Confirm Password">
+                </div>
+            <div class="col-10 mt-5 mb-2">
+            <button type="button" class="btn btn-light create-btn" onclick=crearUsuarioBE()>Crear</button>
+        </div>
+        <div class="col-7 crear-usuario"> 
+            
+        </div>
+    </div>
+    `
+    )
+}
+
+function crearUsuarioBE() {
+    let usuario = document.querySelector('.login-input').value;
+    let contrasena = document.querySelector('.password-input').value;
+    let confirmarContrasena = document.querySelector('.password-confirm').value;
+    if (usuario && contrasena && confirmarContrasena && contrasena == confirmarContrasena) {
+        let nuevoUsuario = {
+            "repartidor": usuario,
+            "contrasena": contrasena
+        }
+
+        axios({
+            url: '../Ez-Food-BE/api/repartidor.php',
+            method: 'POST',
+            responseType: 'json',
+            data: nuevoUsuario
+        }).then((response) => {
+
+            loginContainer.innerHTML = ``;
+
+            loginContainer.insertAdjacentHTML('beforeend', `
+        <div class="row align-items-center justify-content-center login-content">
+                <div class="col-3 my-2">
+                    <img alt="user-logo" src="assets/imagenes/600px-Motorcycle_icon.svg.png"" width="60px">
+                </div>
+                <div class="col-10 my-2">
+                    <input type="string" class="form-control login-input" 
+                        aria-describedby="emailHelp" placeholder="Username">
+                </div>
+                <div class="col-10 my-2">
+                    <input type="password" class="form-control password-input" 
+                        aria-describedby="emailHelp" placeholder="Password">
+                </div>
+                <div class="col-10 mt-5 mb-2">
+                    <button type="button" class="btn btn-light login-btn" onclick=logCredenciales()>LOGIN</button>
+                </div>
+                <div class="col-4 crear-usuario" onclick=creandoUsuario()>
+                    <a>Crear Usuario</a>
+                </div>
+        </div>
+    `)
+
+            confirmarContrasena = '';
+            contrasena = '';
+            usuario = '';
+            crearUsuario.addEventListener('click', creandoUsuario);
+
+        }).catch((error) => {
+            console.log(error);
+        })
+
+    }
+    if (!usuario || !contrasena || !confirmarContrasena) {
+        alert('Empty fields \nYou must fill all the fields')
+    }
+    if (contrasena != confirmarContrasena) {
+        alert('Wrong confirmation password')
+    }
+}
 
 
 responsiveBtn.addEventListener('click', () => {
@@ -32,13 +169,7 @@ function renderizarLoginYOrdenesDisponibles() {
     login.classList.remove('oculto');
 
 
-    loginBtn.addEventListener('click', () => {
-        login.classList.add('oculto');
-
-        mainNavbar.classList.remove('oculto');
-        ordenesDisponibles.classList.remove('oculto');
-        footer.classList.remove('oculto');
-    })
+    loginBtn.addEventListener('click', logCredenciales)
 }
 
 function renderizarDetalleOrden() {

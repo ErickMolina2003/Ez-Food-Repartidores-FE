@@ -11,11 +11,12 @@
   padding-top: 50%;
 }
 
-.login-btn {
+.login-btn, .create-btn {
   width: 100%;
 }
 
-.login-input {
+.login-input, .password-input, .password-confirm {
+  color: white;
   background-color: transparent;
 }
 
