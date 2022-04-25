@@ -1,27 +1,237 @@
-const secondaryNavBar = document.querySelector('.secondary-nav');
-const responsiveBtn = document.querySelector('.navbar-toggler');
-const mainNavbar = document.querySelector('.navbar');
-const login = document.querySelector('.login');
-const loginBtn = document.querySelector('.login-btn');
-const ordenesDisponibles = document.querySelector('.ordenes-disponibles');
-const footer = document.querySelector('.footer');
-const verDetalleOrden = document.querySelectorAll('.ver-detalle-orden');
-const detallesOrden = document.querySelector('.ordenes-detalles');
-const ordenEntregar = document.querySelector('.btn-orden-detalle');
-const ordenAtras = document.querySelector('.btn-orden-atras');
-const ordenesPorEntregar = document.querySelector('.ordenes-por-entregar');
-const btnDetallesPorEntregar = document.querySelectorAll('.por-entregar-detalles');
-const entregandoOrden = document.querySelector('.orden-entregada');
-const btnFinalizarOrdenAtras = document.querySelector('.btn-finalizarOrden-atras');
-const finalizarOrden = document.querySelector('.btn-finalizarOrden');
-const ordenesEntregadas = document.querySelector('.ordenes-entregadas');
-const btnDetalleEntregada = document.querySelector('.btn-verDetalle-Entregada');
-const linkToDisponibles = document.querySelector('.ordenes-disponibles-link');
-const linkToPorEntregar = document.querySelector('.porEntregar-link');
-const linkToEntregadas = document.querySelector('.entregadas-link');
-const linkToLogin = document.querySelector('.salir-link');
-const loginContainer = document.querySelector('.login-container');
-const crearUsuario = document.querySelector('.crear-usuario');
+let secondaryNavBar = document.querySelector('.secondary-nav');
+let responsiveBtn = document.querySelector('.navbar-toggler');
+let mainNavbar = document.querySelector('.navbar');
+let login = document.querySelector('.login');
+let loginBtn = document.querySelector('.login-btn');
+let ordenesDisponibles = document.querySelector('.ordenes-disponibles');
+let footer = document.querySelector('.footer');
+let verDetalleOrden = document.querySelectorAll('.ver-detalle-orden');
+let detallesOrden = document.querySelector('.ordenes-detalles');
+let ordenEntregar = document.querySelector('.btn-orden-detalle');
+let ordenAtras = document.querySelector('.btn-orden-atras');
+let ordenesPorEntregar = document.querySelector('.ordenes-por-entregar');
+let btnDetallesPorEntregar = document.querySelectorAll('.por-entregar-detalles');
+let entregandoOrden = document.querySelector('.orden-entregada');
+let btnFinalizarOrdenAtras = document.querySelector('.btn-finalizarOrden-atras');
+let finalizarOrden = document.querySelector('.btn-finalizarOrden');
+let ordenesEntregadas = document.querySelector('.ordenes-entregadas');
+let btnDetalleEntregada = document.querySelector('.btn-verDetalle-Entregada');
+let linkToDisponibles = document.querySelector('.ordenes-disponibles-link');
+let linkToPorEntregar = document.querySelector('.porEntregar-link');
+let linkToEntregadas = document.querySelector('.entregadas-link');
+let linkToLogin = document.querySelector('.salir-link');
+let loginContainer = document.querySelector('.login-container');
+let crearUsuario = document.querySelector('.crear-usuario');
+let contenedorOrdenesDisponibles = document.querySelector('.ordenes-disponibles-container');
+let contenedorDetallesOrdenes = document.querySelector('.contenedor-detalles-ordenes');
+
+function detalleDeOrden(id) {
+
+    axios({
+        url: `../Ez-Food-BE/api/orden.php?id=${id}`,
+        responseType: 'json',
+        method: 'GET'
+    }).then(res => {
+        console.log(res.data);
+        contenedorDetallesOrdenes.innerHTML =
+            `
+        <div class="col-12 detalle-orden">
+        <div class="row pt-2">
+            <div class="col-12">
+                <div class="row justify-content-between">
+                    <div class="col-6">
+                        <h6>Orden EzFood: ${res.data.id} <br>Detalles</h6>
+                    </div>
+                    <div class="col-3">
+                        <img alt="orden" src="assets/imagenes/LogoFigmaNegro.png" width="60px">
+                    </div>
+                </div>
+            </div>
+            <hr class="divider my-2">
+            <div class="col-12 py-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Origen:</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6><b>${res.data.direccionOrigen}</b></h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 py-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Direccion de envio:</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6><b>${res.data.direccionDestino}</b></h6>
+                    </div>
+                </div>
+            </div>
+            <hr class="divider my-2">
+
+            <div class="col-12 py-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Productos</h6>
+                    </div>
+                    <div class="col-6">
+                        <div class="row justify-content-end">
+                            <div class="col-5">
+                                <p><b>Precio</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="divider">
+
+            <div class="col-12 detalles-productos-container">
+                
+            </div>
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-end">
+                    <div class="col-9 detalles-precio-container">
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="row justify-content-evenly py-1">
+                    <div class="col-5">
+                        <button type="button" class="btn btn-success btn-orden-detalle">Tomar Orden</button>
+                    </div>
+                    <div class="col-5">
+                        <button type="button" class="btn btn-warning btn-orden-atras">Atras</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        `;
+
+        let detallesProductosContainer = document.querySelector('.detalles-productos-container');
+        res.data.productos.forEach(producto => {
+            detallesProductosContainer.insertAdjacentHTML('beforeend',
+                `
+                <div class="row">
+                    <div class="col-9">
+                        <p>${producto.empresaProducto}</p>
+                    </div>
+                    <div class="col-3">
+                        <p>LPS. ${producto.precioProducto}</p>
+                    </div>
+                </div>
+            `
+            )
+
+        })
+
+        let detallesPrecioContainer = document.querySelector('.detalles-precio-container');
+        detallesPrecioContainer.innerHTML = `<p>Total (${res.data.productos.length} productos): LPS.${res.data.subTotal}</p>`
+
+        ordenAtras = document.querySelector('.btn-orden-atras');
+        ordenEntregar = document.querySelector('.btn-orden-detalle');
+
+        ordenAtras.addEventListener('click', () => {
+            mainNavbar.classList.add('oculto');
+            detallesOrden.classList.add('oculto');
+            footer.classList.add('oculto');
+
+            mainNavbar.classList.remove('oculto');
+            ordenesDisponibles.classList.remove('oculto');
+            footer.classList.remove('oculto');
+        })
+
+        ordenEntregar.addEventListener('click', () => {
+            mainNavbar.classList.add('oculto');
+            detallesOrden.classList.add('oculto');
+            footer.classList.add('oculto');
+
+            mainNavbar.classList.remove('oculto');
+            ordenesPorEntregar.classList.remove('oculto');
+            footer.classList.remove('oculto');
+        })
+
+        
+        renderizarDetalleOrden(document.querySelectorAll('.ver-detalle-orden'));
+
+
+    }).catch(e => {
+        console.log(e);
+    })
+
+
+}
+
+function crearOrdenesDisponibles() {
+
+    axios({
+        url: '../Ez-Food-BE/api/orden.php',
+        responseType: 'json',
+        method: 'GET'
+    }).then(response => {
+        // contenedorOrdenesDisponibles.innerHTML = ``;
+        response.data.forEach((orden) => {
+
+            contenedorOrdenesDisponibles.insertAdjacentHTML('beforeend',
+                `
+    <div class="col-12 mt-2 mb-2 orden-col">           
+        <div class="row pt-2">
+            <div class="col-12">
+                <div class="row justify-content-between">
+                    <div class="col-6">
+                        <h6>Orden EzFood: ${orden.id} <br>Detalles</h6>
+                    </div>
+                    <div class="col-3">
+                        <div class="col">
+                            <img alt="Ez-Food" src="assets/imagenes/LogoFigmaBlanco.svg" width="60px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="divider my-2">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Comision: ${orden.TotalComision}</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6>Origen: ${orden.direccionOrigen}</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Direccion de envio: </h6>
+                    </div>
+                    <div class="col-6">
+                        <h6>${orden.direccionDestino}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="row justify-content-center my-2">
+                    <div class="col-5">
+                        <button type="button" class="btn btn-warning ver-detalle-orden" onclick="detalleDeOrden(${orden.id})">Ver
+                            detalles</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+        `
+            )
+        })
+
+    }).catch(error => {
+        console.log(error)
+    })
+
+}
 
 function logCredenciales() {
     axios({
@@ -29,7 +239,6 @@ function logCredenciales() {
         method: 'GET',
         responseType: 'json',
     }).then((response) => {
-        console.log(response.data)
 
         let usuarioLog = document.querySelector('.login-input').value;
         let contrasenaLog = document.querySelector('.password-input').value;
@@ -172,7 +381,7 @@ function renderizarLoginYOrdenesDisponibles() {
     loginBtn.addEventListener('click', logCredenciales)
 }
 
-function renderizarDetalleOrden() {
+function renderizarDetalleOrden(verDetalleOrden) {
     verDetalleOrden.forEach(element => {
         element.addEventListener('click', () => {
             mainNavbar.classList.add('oculto');
@@ -185,25 +394,7 @@ function renderizarDetalleOrden() {
         })
     })
 
-    ordenAtras.addEventListener('click', () => {
-        mainNavbar.classList.add('oculto');
-        detallesOrden.classList.add('oculto');
-        footer.classList.add('oculto');
 
-        mainNavbar.classList.remove('oculto');
-        ordenesDisponibles.classList.remove('oculto');
-        footer.classList.remove('oculto');
-    })
-
-    ordenEntregar.addEventListener('click', () => {
-        mainNavbar.classList.add('oculto');
-        detallesOrden.classList.add('oculto');
-        footer.classList.add('oculto');
-
-        mainNavbar.classList.remove('oculto');
-        ordenesPorEntregar.classList.remove('oculto');
-        footer.classList.remove('oculto');
-    })
 }
 
 function renderizarOrdenPorEntregar() {
@@ -300,6 +491,6 @@ function ocultarTodo() {
 
 
 renderizarLoginYOrdenesDisponibles();
-renderizarDetalleOrden();
 renderizarOrdenPorEntregar();
 renderizarDetalleOrdenEntregada();
+crearOrdenesDisponibles();
