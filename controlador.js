@@ -27,6 +27,431 @@ let contenedorDetallesOrdenes = document.querySelector('.contenedor-detalles-ord
 let idRepartidor;
 let tituloHeader = document.querySelector('.titles-container');
 let ordenesPorEntregarContainer = document.querySelector('.ordenes-por-entregar-container');
+let renderizarOrdenEntregada = document.querySelector('.entregada-orden');
+let ordenesEntregadasContainer = document.querySelector('.ordenes-entregadas-container');
+
+
+function renderizarEntregadas() {
+    axios({
+        url: '../Ez-Food-BE/api/finalizar-orden.php',
+        method: 'GET',
+        responseType: 'json'
+    }).then(response => {
+        ordenesEntregadasContainer.innerHTML = ``;
+
+        response.data.forEach(ordenFinalizada => {
+
+            ordenesEntregadasContainer.insertAdjacentHTML('beforeend',
+                `
+        <div class="row pt-2">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-6">
+                    <h6>Orden EzFood: ${ordenFinalizada.id} <br>Detalles</h6>
+                </div>
+                <div class="col-6">
+                    <img alt="orden" src="assets/imagenes/LogoFigmaNegro.png" width="60px">
+                </div>
+            </div>
+        </div>
+        <hr class="divider my-2">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-6">
+                    <h6>Total de entrega: </h6>
+                </div>
+                <div class="col-6">
+                    <h6>LPS. ${ordenFinalizada.Total}</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <h6>Total de comision: </h6>
+                </div>
+                <div class="col-6">
+                    <h6>LPS. ${ordenFinalizada.TotalComision}</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <h6>Propinas: </h6>
+                </div>
+                <div class="col-6">
+                    <h6>LPS. ${ordenFinalizada.Propina}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="row justify-content-center my-2">
+                <div class="col-5">
+                    <button type="button" class="btn btn-warning btn-verDetalle-Entregada">Ver
+                        detalles</button>
+                </div>
+                <div class="col-5">
+                    <button type="button" class="btn btn-success">Entregada</button>
+                </div>
+            </div>
+        </div>
+        <hr class="divider my-2">
+    </div>
+        `
+            )
+
+        })
+
+        btnDetalleEntregada = document.querySelector('.btn-verDetalle-Entregada');
+        renderizarDetalleOrdenEntregada();
+
+    }).catch(err => {
+        console.log(err);
+    })
+
+}
+function finalizarCompletoOrden(idOrden) {
+
+    axios({
+        url: `../Ez-Food-BE/api/orden.php?id=${idOrden}&asignada`,
+        method: 'GET',
+        responseType: 'json'
+    }).then(response => {
+        response.data.estado = 'entregada';
+
+        axios({
+            url: '../Ez-Food-BE/api/finalizar-orden.php',
+            method: 'POST',
+            responseType: 'json',
+            data: response.data
+        }).then(res => {
+
+            renderizarEntregadas();
+
+
+        }).catch(err => {
+            console.log(err);
+        })
+
+
+
+
+
+    }).catch(e => {
+        console.log(e);
+    })
+
+}
+
+function finalizarOrdenFuncion(idOrden) {
+    if(idOrden > 1) {
+        idOrden--;
+    }
+
+    axios({
+        url: `../Ez-Food-BE/api/orden.php?id=${idOrden}`,
+        method: 'GET',
+        responseType: 'json'
+    }).then(response => {
+        renderizarOrdenEntregada.innerHTML =
+            `
+    <div class="col-12">
+        <div class="row pt-2">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Orden EzFood: ${response.data.id} <br>Detalles</h6>
+                    </div>
+                    <div class="col-6">
+                        <img alt="orden" src="assets/imagenes/LogoFigmaNegro.png" width="60px">
+                    </div>
+                </div>
+            </div>
+            <hr class="divider my-2">
+            <div class="col-12 py-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Origen:</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6><b>${response.data.direccionOrigen}</b></h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 py-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Direccion de envio:</h6>
+                    </div>
+                    <div class="col-6">
+                        <h6><b>${response.data.direccionDestino}</b></h6>
+                    </div>
+                </div>
+            </div>
+            <hr class="divider my-2">
+
+            <div class="col-12 py-1">
+                <div class="row">
+                    <div class="col-6">
+                        <h6>Productos</h6>
+                    </div>
+                    <div class="col-6">
+                        <div class="row justify-content-end">
+                            <div class="col-5">
+                                <p><b>Precio</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="divider">
+
+            <div class="col-12 productos-de-orden-entregada">
+                
+
+
+            </div>
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-end">
+                    <div class="col-7">
+                        <p>Sub total (${response.data.productos.length} productos):</p>
+                    </div>
+                    <div class="col-5">
+                        <div class="row">
+                            <div class="col-10">
+                                <p>LPS. ${response.data.subTotal}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-between">
+                    <div class="col-4">
+                        <h6><b>Impuesto</b></h6>
+                    </div>
+                    <div class="col-3">
+                        <p>Precio</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-9">
+                        <p>Impuesto sobre venta</p>
+                    </div>
+                    <div class="col-3">
+                        <p>LPS. ${response.data.ImpuestoVenta}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-9">
+                        <p>Impuesto sobre Compra</p>
+                    </div>
+                    <div class="col-3">
+                        <p>LPS. ${response.data.ImpuestoCompra}</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-end">
+                    <div class="col-6">
+                        <p>Total: LPS. ${response.data.Impuesto}</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-between">
+                    <div class="col-4">
+                        <h6><b>Comisiones</b></h6>
+                    </div>
+                    <div class="col-3">
+                        <p>Precio</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-9">
+                        <p>Envio</p>
+                    </div>
+                    <div class="col-3">
+                        <p>LPS. ${response.data.envio}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-9">
+                        <p>Propina</p>
+                    </div>
+                    <div class="col-3">
+                        <p>LPS. ${response.data.Propina}</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-end">
+                    <div class="col-12">
+                        <p>Total de comision por envio: LPS. ${response.data.Comision}</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="col-12">
+                <div class="row justify-content-end">
+                    <div class="col-9">
+                        <p>Total (${response.data.productos.length} productos): LPS.${response.data.Total}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="row justify-content-evenly pt-2 pb-3">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-success btn-finalizarOrden" onclick="finalizarCompletoOrden(${response.data.id})">Finalizar
+                            Orden</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button"
+                            class="btn btn-warning btn-finalizarOrden-atras">Atras</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        `;
+
+        let contenedorDeProductos = document.querySelector('.productos-de-orden-entregada');
+        contenedorDeProductos.innerHTML = ``;
+
+        response.data.productos.forEach(producto => {
+            contenedorDeProductos.insertAdjacentHTML('beforeend',
+                `
+            <div class="row">
+                <div class="col-9">
+                    <p>${producto.empresaProducto}</p>
+                </div>
+                <div class="col-3">
+                    <p>LPS. ${producto.precioProducto}</p>
+                </div>
+            </div>
+        `
+            );
+
+        })
+
+        btnFinalizarOrdenAtras = document.querySelector('.btn-finalizarOrden-atras');
+        finalizarOrden = document.querySelector('.btn-finalizarOrden');
+        btnDetallesPorEntregar = document.querySelectorAll('.por-entregar-detalles');
+        renderizarOrdenPorEntregar();
+        tituloHeader.innerHTML = `<h3 class="pt-3">Orden Entregada</h3>`
+
+    }).catch(err => {
+        console.log(err);
+    })
+
+}
+
+function renderizarOrdenesPorEntregar() {
+    axios({
+        url: `../Ez-Food-BE/api/repartidor.php?id=${idRepartidor}`,
+        method: 'GET',
+        responseType: 'json'
+    }).then(response => {
+        ordenesPorEntregarContainer.innerHTML = ``;
+        response.data.forEach(orden => {
+
+            ordenesPorEntregarContainer.insertAdjacentHTML('beforeend',
+                `
+    <div class="row pt-2">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-6">
+                    <h6>Orden EzFood: ${orden.id}<br>Detalles</h6>
+                </div>
+                <div class="col-6">
+                    <img alt="orden" src="assets/imagenes/LogoFigmaNegro.png" width="60px">
+                </div>
+            </div>
+        </div>
+        <hr class="divider my-2">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-6">
+                    <h6>Direccion de origen:</h6>
+                </div>
+                <div class="col-6">
+                    <h6>${orden.direccionOrigen}</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <h6>Direccion de envio:</h6>
+                </div>
+                <div class="col-6">
+                    <h6>${orden.direccionDestino}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="row justify-content-center my-2">
+                <div class="col-5">
+                    <button type="button" class="btn btn-warning por-entregar-detalles" onclick="finalizarOrdenFuncion(${orden.id})">Ver
+                        detalles</button>
+                </div>
+                <div class="col-5">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-light dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            En Origen
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">Tomada</a>
+                            <a class="dropdown-item" href="#">En camino</a>
+                            <a class="dropdown-item" href="#">En destino</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="divider my-3">
+
+    </div>
+        `
+            )
+
+
+
+        })
+        btnFinalizarOrdenAtras = document.querySelector('.btn-finalizarOrden-atras');
+        finalizarOrden = document.querySelector('.btn-finalizarOrden');
+        btnDetallesPorEntregar = document.querySelectorAll('.por-entregar-detalles');
+        renderizarOrdenPorEntregar();
+
+    }).catch(e => {
+        console.log(e);
+    })
+}
 
 function asignarOrden(idOrden) {
     axios({
@@ -44,7 +469,8 @@ function asignarOrden(idOrden) {
             data: response.data
         }).then(res => {
             console.log(res);
-            tituloHeader.innerHTML= `<h3 class="pt-3">Ordenes por Entregar</h3>`
+            tituloHeader.innerHTML = `<h3 class="pt-3">Ordenes por Entregar</h3>`
+            renderizarOrdenesPorEntregar();
         }).catch(e => {
             console.log(e);
         })
@@ -174,7 +600,7 @@ function detalleDeOrden(id) {
             mainNavbar.classList.remove('oculto');
             ordenesDisponibles.classList.remove('oculto');
             footer.classList.remove('oculto');
-            tituloHeader.innerHTML= `<h3 class="pt-3">Ordenes Disponibles</h3>`
+            tituloHeader.innerHTML = `<h3 class="pt-3">Ordenes Disponibles</h3>`
         })
 
         ordenEntregar.addEventListener('click', () => {
@@ -187,9 +613,9 @@ function detalleDeOrden(id) {
             footer.classList.remove('oculto');
         })
 
-        
+
         renderizarDetalleOrden(document.querySelectorAll('.ver-detalle-orden'));
-        tituloHeader.innerHTML= `<h3 class="pt-3">Detalle de Orden</h3>`
+        tituloHeader.innerHTML = `<h3 class="pt-3">Detalle de Orden</h3>`
 
     }).catch(e => {
         console.log(e);
@@ -522,6 +948,4 @@ function ocultarTodo() {
 
 
 renderizarLoginYOrdenesDisponibles();
-renderizarOrdenPorEntregar();
-renderizarDetalleOrdenEntregada();
 crearOrdenesDisponibles();
