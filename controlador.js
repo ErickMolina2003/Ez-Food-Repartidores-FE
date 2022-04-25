@@ -24,6 +24,35 @@ let loginContainer = document.querySelector('.login-container');
 let crearUsuario = document.querySelector('.crear-usuario');
 let contenedorOrdenesDisponibles = document.querySelector('.ordenes-disponibles-container');
 let contenedorDetallesOrdenes = document.querySelector('.contenedor-detalles-ordenes');
+let idRepartidor;
+let tituloHeader = document.querySelector('.titles-container');
+let ordenesPorEntregarContainer = document.querySelector('.ordenes-por-entregar-container');
+
+function asignarOrden(idOrden) {
+    axios({
+        url: `../Ez-Food-BE/api/orden.php?id=${idOrden}`,
+        responseType: 'json',
+        method: 'GET'
+    }).then(response => {
+        response.data.estado = "origen";
+        response.data.repartidor = idRepartidor;
+
+        axios({
+            url: '../Ez-Food-BE/api/tomar-orden.php',
+            responseType: 'json',
+            method: 'POST',
+            data: response.data
+        }).then(res => {
+            console.log(res);
+            tituloHeader.innerHTML= `<h3 class="pt-3">Ordenes por Entregar</h3>`
+        }).catch(e => {
+            console.log(e);
+        })
+
+    }).catch(err => {
+        console.log(err);
+    })
+}
 
 function detalleDeOrden(id) {
 
@@ -102,7 +131,7 @@ function detalleDeOrden(id) {
             <div class="col-12">
                 <div class="row justify-content-evenly py-1">
                     <div class="col-5">
-                        <button type="button" class="btn btn-success btn-orden-detalle">Tomar Orden</button>
+                        <button type="button" class="btn btn-success btn-orden-detalle" onclick="asignarOrden(${id})">Tomar Orden</button>
                     </div>
                     <div class="col-5">
                         <button type="button" class="btn btn-warning btn-orden-atras">Atras</button>
@@ -145,6 +174,7 @@ function detalleDeOrden(id) {
             mainNavbar.classList.remove('oculto');
             ordenesDisponibles.classList.remove('oculto');
             footer.classList.remove('oculto');
+            tituloHeader.innerHTML= `<h3 class="pt-3">Ordenes Disponibles</h3>`
         })
 
         ordenEntregar.addEventListener('click', () => {
@@ -159,7 +189,7 @@ function detalleDeOrden(id) {
 
         
         renderizarDetalleOrden(document.querySelectorAll('.ver-detalle-orden'));
-
+        tituloHeader.innerHTML= `<h3 class="pt-3">Detalle de Orden</h3>`
 
     }).catch(e => {
         console.log(e);
@@ -254,6 +284,7 @@ function logCredenciales() {
                     ordenesDisponibles.classList.remove('oculto');
                     footer.classList.remove('oculto');
 
+                    idRepartidor = data.id;
                     contador++;
                 }
             })
